@@ -171,14 +171,14 @@ let playState=(function(){
             else if (this.controller.RIGHT.isDown)
                 this.sprite.body.velocity.x = 300;
 
-            for(let i=0;i<this.collision.length;i++){ // prolazimo kroz kolizione objekte
-                if(this.collision[i].type==='ground'){
+            for(let i=0;i<this.collision.length;i++) { // prolazimo kroz kolizione objekte
+                if (this.collision[i].type === 'ground') {
                     game.physics.arcade.collide(this.sprite, this.collision[i].el);
                     if (this.controller.JUMP.isDown && this.sprite.body.touching.down && this.collision[i].el)
                         this.sprite.body.velocity.y = -300;
                 }
-                if(this.collision[i].type==='bullet'){
-                    game.physics.arcade.collide(this.weapon.bullets,this.collision[i].el,(bullet,enemy)=>{
+                if (this.collision[i].type === 'bullet') {
+                    game.physics.arcade.collide(this.weapon.bullets, this.collision[i].el, (bullet, enemy) => {
                         bullet.kill();
                         audio.boom.play();
                         this.score.increment();
@@ -186,11 +186,17 @@ let playState=(function(){
                     });
                 }
             }
-
             if(this.controller.FIRE.isDown){
-                this.sprite.loadTexture(this.img,1);
-                this.weapon.fire();
-                audio.dsh.play();
+                this.oldTimestamp=this.oldTimestamp || 10; // mock value
+                let newTimestamp=window.performance && window.performance.now && window.performance.timing && window.performance.timing.navigationStart ? window.performance.now() + window.performance.timing.navigationStart : Date.now();
+
+                if((newTimestamp - this.oldTimestamp) >= this.weapon.fireRate ){
+                    console.log(newTimestamp);
+                    this.weapon.fire();
+                    this.sprite.loadTexture(this.img,1);
+                    audio.dsh.play();
+                    this.oldTimestamp=newTimestamp;
+                }
             }else
                 this.sprite.loadTexture(this.img,0);
 
