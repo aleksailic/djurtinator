@@ -5,9 +5,19 @@ let utils=(function(){
         explosion.animations.play('explode',60,false);
         el.kill();
     };
-
+    let once=function(seconds, callback) {
+        let counter = 0;
+        let time = window.setInterval( function () {
+            counter++;
+            if ( counter >= seconds ) {
+                callback();
+                window.clearInterval( time );
+            }
+        }, 10);
+    };
     return {
-      explode
+      explode,
+      once
     };
 
 })();
